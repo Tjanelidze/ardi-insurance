@@ -1,23 +1,42 @@
-import js from '@eslint/js'
-import globals from 'globals'
-import reactHooks from 'eslint-plugin-react-hooks'
-import reactRefresh from 'eslint-plugin-react-refresh'
-import tseslint from 'typescript-eslint'
-import { defineConfig, globalIgnores } from 'eslint/config'
+import js from '@eslint/js';
+import globals from 'globals';
+import reactHooks from 'eslint-plugin-react-hooks';
+import reactRefresh from 'eslint-plugin-react-refresh';
+import tseslint from 'typescript-eslint';
+import {defineConfig, globalIgnores} from 'eslint/config';
 
 export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      js.configs.recommended,
-      tseslint.configs.recommended,
-      reactHooks.configs.flat.recommended,
-      reactRefresh.configs.vite,
-    ],
-    languageOptions: {
-      ecmaVersion: 2020,
-      globals: globals.browser,
+    globalIgnores(['dist']),
+    {
+        files: ['**/*.{ts,tsx}'],
+        extends: [
+            js.configs.recommended,
+            tseslint.configs.recommended,
+            reactRefresh.configs.vite,
+        ],
+        plugins: {
+            'react-hooks': reactHooks,
+        },
+        languageOptions: {
+            ecmaVersion: 2020,
+            globals: globals.browser,
+        },
+        rules: {
+            '@typescript-eslint/explicit-function-return-type': 'off',
+            '@typescript-eslint/no-explicit-any': 'error',
+            'react-hooks/rules-of-hooks': 'error',
+            'react-hooks/exhaustive-deps': 'warn',
+            'react-refresh/only-export-components': 'off',
+            'padding-line-between-statements': [
+                'error',
+                {blankLine: 'always', prev: '*', next: ['block', 'block-like']},
+                {blankLine: 'always', prev: '*', next: 'return'}
+            ],
+            'no-param-reassign': ['error', {
+                props: true,
+                ignorePropertyModificationsFor: ['acc', 'accumulator', 'e', 'ctx', 'req', 'request', 'res', 'response']
+            }]
+
+        },
     },
-  },
-])
+]);
