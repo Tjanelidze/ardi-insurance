@@ -12,6 +12,8 @@ import { INITIAL_ADDONS, INITIAL_DRIVER, INITIAL_VEHICLE } from "@/constants/ins
 import { WizardLayout } from "@/components/layout/WizardLayout/WizardLayout.tsx";
 import { StepOneDriverInfo } from "@/components/steps/StepOneDriverInfo/StepOneDriverInfo.tsx";
 import { StepTwo } from "@/components/steps/StepTwo/StepTwo.tsx";
+import { usePreventUnload } from "@/hooks/usePreventUnload.ts";
+import { StepThree } from "@/components/steps/StepThree/StepThree.tsx";
 
 type Step = 1 | 2 | 3;
 
@@ -25,6 +27,11 @@ function App() {
   );
   const [addons, setAddons] = useState<Addons>(INITIAL_ADDONS);
   const [packageError, setPackageError] = useState<string>();
+  const hasData =
+    Object.values(driverData).some((v) => v !== "") ||
+    Object.values(vehicleData).some((v) => v !== "");
+
+  usePreventUnload(hasData);
 
   const step1Ref = useRef<StepOneRef>(null);
 
@@ -41,6 +48,10 @@ function App() {
         return;
       }
       setPackageError(undefined);
+    }
+
+    if (step === 3) {
+      return;
     }
     setStep((s) => Math.min(3, s + 1) as Step);
   };
@@ -72,8 +83,13 @@ function App() {
             error={packageError}
           />
         )}
-        {step === 3 && (
-          <p className="p-8 text-center text-sm text-slate-400">Step 3</p>
+        {step === 3 && selectedPackage && (
+          <StepThree
+            driverData={driverData}
+            vehicleData={vehicleData}
+            selectedPackage={selectedPackage}
+            addons={addons}
+          />
         )}
       </WizardLayout>
     </div>

@@ -27,3 +27,14 @@ export type Addons = {
   replacementCar: boolean;
   zeroDeductible: boolean;
 };
+
+export type PremiumBreakdown = {
+  base: number;
+  ageSurcharge: number;
+  carAgeSurcharge: number;
+  roadsideAssistance: number;
+  replacementCar: number;
+  zeroDeductible: number;
+  annual: number;
+  monthly: number;
+};

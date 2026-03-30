@@ -1,9 +1,4 @@
-import type {
-  Addons,
-  DriverFields,
-  PackageType,
-  VehicleFields,
-} from "@/types/insurance.types.ts";
+import type { Addons, DriverFields, PackageType, VehicleFields } from "@/types/insurance.types.ts";
 
 export const INITIAL_DRIVER: DriverFields = {
   firstName: "",
@@ -80,3 +75,9 @@ export const ADDONS = [
     price: "+15%",
   },
 ];
+
+export const PACKAGE_RATES: Record<PackageType, number> = {
+  basic: 0.012,
+  standard: 0.018,
+  premium: 0.025,
+};
