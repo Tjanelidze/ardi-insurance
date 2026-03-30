@@ -10,3 +10,11 @@
     --color-navy-800: #1E2022;
     --color-navy-900: #141618;
 }
+
+input, textarea {
+    cursor: text;
+}
+
+button {
+    cursor: pointer;
+}
