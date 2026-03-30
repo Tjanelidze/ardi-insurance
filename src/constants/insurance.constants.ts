@@ -1,4 +1,9 @@
-import type { Addons, DriverFields, PackageType, VehicleFields } from "@/types/insurance.types.ts";
+import type {
+  Addons,
+  DriverFields,
+  PackageType,
+  VehicleFields,
+} from "@/types/insurance.types.ts";
 
 export const INITIAL_DRIVER: DriverFields = {
   firstName: "",
@@ -81,3 +86,17 @@ export const PACKAGE_RATES: Record<PackageType, number> = {
   standard: 0.018,
   premium: 0.025,
 };
+
+export const PACKAGE_LABELS: Record<PackageType, string> = {
+  basic: "Basic",
+  standard: "Standard",
+  premium: "Premium",
+};
+
+export const ADDON_LABELS: Record<keyof Addons, string> = {
+  roadsideAssistance: "Roadside Assistance",
+  replacementCar: "Replacement Car",
+  zeroDeductible: "0% Deductible",
+};
+
+export const STEPS = ["მონაცემები", "პაკეტი", "შეჯამება"];

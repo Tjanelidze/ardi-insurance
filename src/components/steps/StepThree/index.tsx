@@ -7,12 +7,14 @@ import type { StepThreeProps } from "@/components/steps/StepThree/StepThree.type
 import { calculatePremium } from "@/utils/premium.ts";
 import { getPolicyDates } from "@/utils/date.ts";
 import { ADDON_LABELS, PACKAGE_LABELS } from "@/components/steps/StepThree/StepThree.constants.ts";
+import { SuccessView } from "@/components/steps/StepThree/SuccessView.tsx";
 
-export function StepThree({
+export default function StepThree({
   driverData,
   vehicleData,
   selectedPackage,
   addons,
+  policyNumber,
 }: StepThreeProps) {
   const premium = calculatePremium(
     driverData,
@@ -25,6 +27,16 @@ export function StepThree({
   const activeAddons = (Object.keys(addons) as (keyof Addons)[]).filter(
     (k) => addons[k],
   );
+
+  if (policyNumber) {
+    return (
+      <SuccessView
+        policyNumber={policyNumber}
+        annual={premium.annual}
+        monthly={premium.monthly}
+      />
+    );
+  }
 
   return (
     <div className="p-6 sm:p-8">

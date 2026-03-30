@@ -10,4 +10,11 @@ export type StepThreeProps = {
   vehicleData: VehicleFields;
   selectedPackage: PackageType;
   addons: Addons;
+  policyNumber: string | null;
+};
+
+export type SuccessViewProps = {
+  policyNumber: string;
+  annual: number;
+  monthly: number;
 };

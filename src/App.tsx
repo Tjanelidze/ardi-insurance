@@ -1,94 +1,76 @@
-import { useRef, useState } from "react";
 import { Header } from "./components/layout/Header";
 
-import {
-  type Addons,
-  type DriverFields,
-  type PackageType,
-  type StepOneRef,
-  type VehicleFields
-} from "./types/insurance.types";
-import { INITIAL_ADDONS, INITIAL_DRIVER, INITIAL_VEHICLE } from "@/constants/insurance.constants.ts";
 import { WizardLayout } from "@/components/layout/WizardLayout/WizardLayout.tsx";
-import { StepOneDriverInfo } from "@/components/steps/StepOneDriverInfo/StepOneDriverInfo.tsx";
 import { StepTwo } from "@/components/steps/StepTwo/StepTwo.tsx";
 import { usePreventUnload } from "@/hooks/usePreventUnload.ts";
-import { StepThree } from "@/components/steps/StepThree/StepThree.tsx";
-
-type Step = 1 | 2 | 3;
+import StepThree from "@/components/steps/StepThree";
+import { StepOneDriverInfo } from "@/components/steps/StepOneDriverInfo/StepOneDriverInfo.tsx";
+import { useWizard } from "@/context/WizardContext.tsx";
+import { useState } from "react";
+import { loadDraft } from "@/hooks/useWizardDraft.ts";
+import { DraftBanner } from "@/components/layout/DraftBanner/DraftBanner.tsx";
 
 function App() {
-  const [step, setStep] = useState<Step>(1);
-  const [driverData, setDriverData] = useState<DriverFields>(INITIAL_DRIVER);
-  const [vehicleData, setVehicleData] =
-    useState<VehicleFields>(INITIAL_VEHICLE);
-  const [selectedPackage, setSelectedPackage] = useState<PackageType | null>(
-    null,
-  );
-  const [addons, setAddons] = useState<Addons>(INITIAL_ADDONS);
-  const [packageError, setPackageError] = useState<string>();
-  const hasData =
-    Object.values(driverData).some((v) => v !== "") ||
-    Object.values(vehicleData).some((v) => v !== "");
+  const { state, dispatch, step1Ref, handleNext, handleBack } = useWizard();
+  const [showDraftBanner, setShowDraftBanner] = useState(() => {
+    const draft = loadDraft();
 
+    return (
+      draft !== null && Object.values(draft.driverData).some((v) => v !== "")
+    );
+  });
+
+  const hasData = Object.values(state.driverData).some((v) => v !== "");
   usePreventUnload(hasData);
-
-  const step1Ref = useRef<StepOneRef>(null);
-
-  const handleNext = () => {
-    if (step === 1) {
-      const isValid = step1Ref.current?.validate();
-      if (!isValid) return;
-    }
-
-    if (step === 2) {
-      if (!selectedPackage) {
-        setPackageError("გთხოვთ აირჩიოთ პაკეტი");
-
-        return;
-      }
-      setPackageError(undefined);
-    }
-
-    if (step === 3) {
-      return;
-    }
-    setStep((s) => Math.min(3, s + 1) as Step);
-  };
-  const handleBack = () => setStep((s) => Math.max(1, s - 1) as Step);
-
-  const handleAddonToggle = (key: keyof Addons) => {
-    setAddons((prev) => ({ ...prev, [key]: !prev[key] }));
-  };
 
   return (
     <div className="dark:bg-navy-900 min-h-screen bg-slate-50 transition-colors duration-200">
       <Header />
-      <WizardLayout currentStep={step} onNext={handleNext} onBack={handleBack}>
-        {step === 1 && (
+
+      {showDraftBanner && (
+        <DraftBanner onDismiss={() => setShowDraftBanner(false)} />
+      )}
+
+      <WizardLayout
+        currentStep={state.currentStep}
+        onNext={handleNext}
+        onBack={handleBack}
+        isSubmitting={state.isSubmitting}
+        isComplete={!!state.policyNumber}
+      >
+        {state.currentStep === 1 && (
           <StepOneDriverInfo
             ref={step1Ref}
-            driverData={driverData}
-            vehicleData={vehicleData}
-            onDriverChange={setDriverData}
-            onVehicleChange={setVehicleData}
+            driverData={state.driverData}
+            vehicleData={state.vehicleData}
+            onDriverChange={(data) =>
+              dispatch({ type: "SET_DRIVER_DATA", payload: data })
+            }
+            onVehicleChange={(data) =>
+              dispatch({ type: "SET_VEHICLE_DATA", payload: data })
+            }
           />
         )}
-        {step === 2 && (
+        {state.currentStep === 2 && (
           <StepTwo
-            selectedPackage={selectedPackage}
-            addons={addons}
-            onPackageChange={setSelectedPackage}
-            onAddonToggle={handleAddonToggle}
-            error={packageError}
+            selectedPackage={state.selectedPackage}
+            addons={state.addons}
+            onPackageChange={(pkg) =>
+              dispatch({ type: "SET_PACKAGE", payload: pkg })
+            }
+            onAddonToggle={(key) =>
+              dispatch({ type: "TOGGLE_ADDON", payload: key })
+            }
+            error={state.packageError}
           />
         )}
-        {step === 3 && selectedPackage && (
+        {state.currentStep === 3 && state.selectedPackage && (
           <StepThree
-            driverData={driverData}
-            vehicleData={vehicleData}
-            selectedPackage={selectedPackage}
-            addons={addons}
+            driverData={state.driverData}
+            vehicleData={state.vehicleData}
+            selectedPackage={state.selectedPackage}
+            addons={state.addons}
+            policyNumber={state.policyNumber}
           />
         )}
       </WizardLayout>

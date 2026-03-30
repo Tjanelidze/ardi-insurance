@@ -5,4 +5,6 @@ export type WizardLayoutProps = {
   onNext: () => void;
   onBack: () => void;
   children: React.ReactNode;
+  isSubmitting?: boolean;
+  isComplete?: boolean;
 };
